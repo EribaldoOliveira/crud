@@ -1,0 +1,117 @@
+Resumo do Fluxo:
+----------------
+
+Conexão com o Banco: Estabelecemos uma conexão com o banco de dados usando mysqli_connect().
+Create: Recebemos dados do formulário e inserimos no banco usando INSERT.
+Read: Recuperamos dados com SELECT e mostramos na página.
+Update: Atualizamos os dados com UPDATE, com base em um formulário de edição.
+Delete: Excluímos um registro usando a consulta DELETE.
+
+Roteamento:
+-----------
+crud/
+├── conexao.php          # Arquivo para conexão com o banco de dados
+├── index.php            # Página inicial do sistema
+├── create.php           # Página para inserir registros
+├── listar.php           # Página para listar registros
+├── editar.php           # Página para editar registros
+├── deletar.php          # Página para deletar registros
+└── css/                 # Diretório para arquivos CSS (opcional)
+    └── style.css        # Arquivo CSS para estilização
+
+TABELAS
+-------
+
+1. Tabela clientes:
+Essa tabela irá armazenar as informações dos clientes, como nome, email, cidade e estado.
+
+
+CREATE TABLE clientes (
+    id INT AUTO_INCREMENT PRIMARY KEY,  -- Coluna de ID com incremento automático
+    nome VARCHAR(100) NOT NULL,         -- Nome do cliente (não pode ser nulo)
+    email VARCHAR(100) NOT NULL UNIQUE,  -- Email do cliente (não pode ser nulo e deve ser único)
+    cidade VARCHAR(100) NOT NULL,       -- Cidade do cliente
+    estado VARCHAR(2) NOT NULL          -- Estado do cliente (abreviado, ex: 'SE')
+);
+
+
+id: Chave primária que identifica unicamente cada cliente.
+nome: Nome do cliente, armazenado como uma string.
+email: Email do cliente, que deve ser único (não pode haver dois clientes com o mesmo email).
+cidade: Cidade do cliente.
+estado: Estado do cliente, representado por uma string de 2 caracteres (exemplo: SE para Sergipe).
+
+------------------------
+2. Tabela usuarios (opcional para controle de login):
+Se você for implementar um sistema de login, você pode criar uma tabela para armazenar as informações dos usuários.
+
+
+CREATE TABLE usuarios (
+    id INT AUTO_INCREMENT PRIMARY KEY,      -- ID do usuário
+    username VARCHAR(50) NOT NULL UNIQUE,    -- Nome de usuário
+    senha VARCHAR(255) NOT NULL,             -- Senha do usuário (armazenada de forma segura)
+    email VARCHAR(100) NOT NULL UNIQUE,      -- Email do usuário (único)
+    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- Data de criação da conta
+);
+
+username: Nome de usuário utilizado para login.
+senha: Senha do usuário (é recomendável criptografar as senhas antes de armazená-las).
+email: Email do usuário.
+criado_em: Data e hora em que a conta foi criada.
+
+------------------------
+3. Tabela transacoes (opcional para controle financeiro):
+Se você quiser armazenar transações financeiras ou qualquer outro dado relacionado, você pode criar uma tabela de transações. Aqui está um exemplo de uma tabela para controle de movimentações financeiras de clientes:
+
+
+CREATE TABLE transacoes (
+    id INT AUTO_INCREMENT PRIMARY KEY,          -- ID da transação
+    cliente_id INT NOT NULL,                    -- ID do cliente relacionado à transação
+    tipo VARCHAR(20) NOT NULL,                  -- Tipo da transação (ex: 'crédito', 'débito')
+    valor DECIMAL(10, 2) NOT NULL,              -- Valor da transação
+    descricao VARCHAR(255),                     -- Descrição da transação
+    data TIMESTAMP DEFAULT CURRENT_TIMESTAMP,   -- Data e hora da transação
+    FOREIGN KEY (cliente_id) REFERENCES clientes(id)  -- Relaciona a transação com a tabela 'clientes'
+);
+
+cliente_id: Relaciona a transação com o cliente (referência à tabela clientes).
+tipo: Tipo da transação (pode ser 'crédito', 'débito', etc.).
+valor: Valor da transação.
+descricao: Descrição opcional da transação.
+data: Data e hora da transação.
+
+------------------------
+4. Tabela logs (opcional para registro de atividades):
+Uma tabela para registrar atividades dos usuários, como login ou ações importantes dentro do sistema.
+
+CREATE TABLE logs (
+    id INT AUTO_INCREMENT PRIMARY KEY,          -- ID do log
+    usuario_id INT NOT NULL,                    -- ID do usuário relacionado
+    acao VARCHAR(255) NOT NULL,                  -- Descrição da ação (ex: 'Login', 'Alteração de cliente')
+    data TIMESTAMP DEFAULT CURRENT_TIMESTAMP,   -- Data e hora da ação
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id)  -- Relaciona o log com o usuário
+);
+
+usuario_id: Relaciona o log com o usuário que executou a ação.
+acao: Descrição da ação realizada.
+data: Data e hora da execução da ação.
+
+Resumo das tabelas:
+clientes: Armazena informações sobre os clientes.
+usuarios: (Opcional) Armazena informações sobre os usuários do sistema.
+transacoes: (Opcional) Armazena informações sobre transações financeiras dos clientes.
+logs: (Opcional) Registra atividades dos usuários, como logins ou ações realizadas no sistema.
+
+
+***EXTRA***
+
+7. Validação e Segurança
+Validar os dados no backend para garantir que as informações estejam corretas.
+Evitar SQL Injection: Usar consultas preparadas (mysqli_prepare) ou PDO com prepared statements para garantir maior segurança.
+
+Resumo do Processo:
+-------------------
+Conectar ao banco de dados.
+Criar formulários HTML para entrada de dados.
+Usar SQL para inserir, ler, atualizar e excluir dados.
+Exibir dados ao usuário e realizar operações no banco com base nas ações do usuário.
